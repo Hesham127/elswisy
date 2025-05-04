@@ -1,4 +1,4 @@
-from database import get_db_connection, close_db_connection
+from backend.database import get_db_connection, close_db_connection
 from mysql.connector import Error
 
 class Auth:
@@ -9,6 +9,8 @@ class Auth:
     def __init__(self):
         # Open a new database connection for this instance
         self.connection = get_db_connection()
+        self.current_user = None
+        self.current_username = None
         
     def __del__(self):
         # Ensure the connection is closed when the object is deleted
@@ -28,6 +30,9 @@ class Auth:
         Returns:
             tuple: (success (bool), message (str))
         """
+        if not self.connection or not self.connection.is_connected():
+            return False, "Database connection error. Please try again later."
+            
         try:
             cursor = self.connection.cursor()
             # Insert the new user into the users table
@@ -50,16 +55,27 @@ class Auth:
         Returns:
             tuple: (success (bool), message (str))
         """
+        if not self.connection or not self.connection.is_connected():
+            return False, "Database connection error. Please try again later."
+            
         try:
-            cursor = self.connection.cursor()
+            cursor = self.connection.cursor(dictionary=True)
             # Check if a user exists with the given username/email and password
             cursor.execute(
-                "SELECT id FROM users WHERE (username = %s OR email = %s) AND password = %s",
+                "SELECT id, username, email, name FROM users WHERE (username = %s OR email = %s) AND password = %s",
                 (username_or_email, username_or_email, password)
             )
-            if cursor.fetchone():
+            user = cursor.fetchone()
+            if user:
+                self.current_user = user
+                self.current_username = user['username']
                 return True, "Login successful"
             return False, "Invalid username/email or password"
         except Error as e:
-            return False, f"Error: {str(e)}" 
+            return False, f"Error: {str(e)}"
+            
+    def logout(self):
+        """Log out the current user."""
+        self.current_user = None
+        self.current_username = None 
         

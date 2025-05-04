@@ -1,6 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
-from config import DB_CONFIG
+from backend.config import DB_CONFIG
 
 # Database connection helper functions
 
