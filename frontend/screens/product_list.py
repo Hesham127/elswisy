@@ -149,28 +149,22 @@ class ProductListScreen(tk.Frame):
         self.filter_products()
 
     def filter_products(self):
-        """Filter products based on search text and selected category"""
-        search_text = self.search_var.get().lower()
-        selected_category = None
+        """Filter products based on search text"""
+        search_text = self.search_var.get().strip()
         
-        # Find selected category
-        for category, btn in self.category_buttons.items():
-            if btn['relief'] == 'sunken':
-                selected_category = category
-                break
-        
-        # Use backend function to get products based on search
         if search_text:
-            products = search_products_by_name(search_text)  # Backend function call
+            # Use the backend search function
+            products = search_products_by_name(search_text)
         else:
-            products = get_all_products()  # Backend function call
-        
-        # Filter by category if one is selected
-        if selected_category and selected_category != "All":
-            products = [p for p in products if p['category'] == selected_category]
-        
-        # Update the product grid
+            # If search is empty, show all products
+            products = get_all_products()
+            
+        # Update the product grid with filtered results
         self.update_product_grid(products)
+        
+        # Update canvas scroll region
+        self.products_frame.update_idletasks()
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def on_canvas_resize(self, event):
         self.canvas.itemconfig("all", width=event.width)
