@@ -3,13 +3,12 @@ from auth import Auth
 def test_signup():
     auth = Auth()
     user_data = {
-        'user_name': 'hamada__',
-        'password_': '123456789',
-        'email': 'hamada@gmail.com',
-        'user_phone': 1234567890,
-        'addr_city': 'Cairo',
-        'addr_street': '123 Test Street',
-        'addr_bn': 1
+        'username': 'testuser',
+        'password': 'testpass123',
+        'email': 'testuser@example.com',
+        'address': '123 Test Street',
+        'name': 'Test User',
+        'phone_number': '1234567890'
     }
     print("\nTesting Sign Up:")
     success, message = auth.signup(**user_data)
@@ -17,12 +16,16 @@ def test_signup():
 
 def test_login():
     auth = Auth()
-    print("\nTesting Correct Login:")
-    success, message = auth.login('hamada__', '123456789')
+    print("\nTesting Correct Login (by username):")
+    success, message = auth.login('testuser', 'testpass123')
+    print(f"Login Result: {message}")
+
+    print("\nTesting Correct Login (by email):")
+    success, message = auth.login('testuser@example.com', 'testpass123')
     print(f"Login Result: {message}")
 
     print("\nTesting Wrong Password:")
-    success, message = auth.login('hamada__', 'wrongpass')
+    success, message = auth.login('testuser', 'wrongpass')
     print(f"Login Result: {message}")
 
     print("\nTesting Non-existent User:")

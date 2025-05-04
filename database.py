@@ -2,9 +2,13 @@ import mysql.connector
 from mysql.connector import Error
 from config import DB_CONFIG
 
+# Database connection helper functions
+
 def get_db_connection():
     """
-    Create and return a database connection
+    Create and return a new MySQL database connection using DB_CONFIG.
+    Returns:
+        connection (mysql.connector.connection.MySQLConnection): The database connection object, or None if connection fails.
     """
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
@@ -17,7 +21,9 @@ def get_db_connection():
 
 def close_db_connection(connection):
     """
-    Close the database connection
+    Close the given MySQL database connection if it is open.
+    Args:
+        connection (mysql.connector.connection.MySQLConnection): The connection to close.
     """
     if connection and connection.is_connected():
         connection.close()
